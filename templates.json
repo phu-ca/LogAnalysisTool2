@@ -1,0 +1,8 @@
+{
+    "events": [
+        {"Name": "Reboot", "File": "messages.*", "Token": "kernel: klogd: exiting"},
+        {"Name": "Bootup", "File": "messages.*", "Token": "klogd started"},
+        {"Name": "EOD", "File": "Data.Tracing.*", "StartToken": "Start BusinessDayStartEnd", "EndToken": "End BusinessDayStartEnd"},
+        {"Name": "BillPayment", "File": "Data.Tracing.*", "StartToken": "Start BillPayment", "EndToken": "End BillPayment"}
+    ]
+}

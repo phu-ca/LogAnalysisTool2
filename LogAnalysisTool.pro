@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     controller.cpp \
-    workingspace.cpp
+    workingspace.cpp \
+    logfile.cpp
 
 HEADERS  += mainwindow.h \
     controller.h \
-    workingspace.h
+    workingspace.h \
+    logfile.h
 
 FORMS    += mainwindow.ui
 
@@ -28,3 +30,6 @@ RESOURCES += \
 
 RC_FILE += \
     loganalysistool.rc
+
+DISTFILES += \
+    templates.json
