@@ -193,7 +193,7 @@ void WorkingSpace::Analyze(Action act, const QStringList params, const QStringLi
         case EVENTS_SEARCH:
             viewer->clear();
             for (QHash<QString,int>::const_iterator l = events_summary.begin(); l != events_summary.end(); l ++)
-                viewer->append(QString("%s: %d\n").arg(l.key()).arg(l.value()));
+                viewer->append(QString("%1: %2\n").arg(l.key()).arg(l.value()));
             break;
         default:
             break;
