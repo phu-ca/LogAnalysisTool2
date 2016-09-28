@@ -3,7 +3,7 @@
 
 int LogFile::SearchBegin(const QDate sdate)
 {
-    if (len <= 0)
+    if (len <= 0 || sdate > getDate(len - 1))
         return -1;
     else if (sdate <= getDate(0))
         return 0;
@@ -13,7 +13,7 @@ int LogFile::SearchBegin(const QDate sdate)
 
 int LogFile::SearchEnd(const QDate edate)
 {
-    if (len <= 0)
+    if (len <= 0 || edate < getDate(0))
         return -1;
     else if (edate >= getDate(len - 1))
         return len - 1;
@@ -25,9 +25,9 @@ int LogFile::searchBegin(const int m, const int n, const QDate t)
 {
     if (m >= n)
     {
-        if (getDate(n) >= t)
+        if ( getDate(n) >= t)
             return n;
-        else if ( getDate(m) >= t)
+        else if (getDate(m) >= t)
             return m;
         else
             return -1;
@@ -60,7 +60,7 @@ int LogFile::searchEnd(const int m, const int n, const QDate t)
 {
     if (m >= n)
     {
-        if (getDate(m) <= t)
+        if ( getDate(m) <= t)
             return m;
         else if (getDate(n) <= t)
             return n;
@@ -153,7 +153,10 @@ void TraceLog::Parsed()
     {
         QFile file (i->absoluteFilePath());
         if (file.open(QIODevice::ReadOnly))
-            parsed_contents += QString(file.readAll()).split("\n");
+        {
+            parsed_contents += QString(file.readAll()).split("\n").filter(datestr);
+            file.close();
+        }
     }
 
     len = parsed_contents.size();
@@ -161,7 +164,6 @@ void TraceLog::Parsed()
 
 QDate TraceLog::getDate(const int idx)
 {
-    QRegExp datestr ("^(.)*\\|([0-9]{2}-[0-9]{2}) ");
     if (datestr.indexIn(parsed_contents.at(idx)) != -1)
         return QDate().fromString(datestr.cap(2) + "-" + year, "MM-dd-yyyy");
     else
@@ -176,7 +178,10 @@ void MessagesLog::Parsed()
     {
         QFile file (i->absoluteFilePath());
         if (file.open(QIODevice::ReadOnly))
-            parsed_contents += QString(file.readAll()).split("\n");
+        {
+            parsed_contents += QString(file.readAll()).split("\n").filter(datestr);
+            file.close();
+        }
     }
 
     len = parsed_contents.size();
@@ -184,7 +189,6 @@ void MessagesLog::Parsed()
 
 QDate MessagesLog::getDate(const int idx)
 {
-    QRegExp datestr ("^([a-zA-Z]{3}) +([0-9]{1,2}) ");
     if (datestr.indexIn(parsed_contents.at(idx)) != -1)
         return QDate().fromString(datestr.cap(1) + " " + datestr.cap(2) + " " + year, "MMM d yyyy");
     else
@@ -199,7 +203,10 @@ void SysLog::Parsed()
     {
         QFile file (i->absoluteFilePath());
         if (file.open(QIODevice::ReadOnly))
-            parsed_contents += QString(file.readAll()).split("\n");
+        {
+            parsed_contents += QString(file.readAll()).split("\n").filter(datestr);
+            file.close();
+        }
     }
 
     len = parsed_contents.size();
@@ -207,7 +214,6 @@ void SysLog::Parsed()
 
 QDate SysLog::getDate(const int idx)
 {
-    QRegExp datestr ("^([a-zA-Z]{3}) +([0-9]{1,2}) ");
     if (datestr.indexIn(parsed_contents.at(idx)) != -1)
         return QDate().fromString(datestr.cap(1) + " " + datestr.cap(2) + " " + year, "MMM d yyyy");
     else
@@ -222,10 +228,10 @@ void CrashLog::Parsed()
         QStringList data = QString(file.readAll()).split("\n");
         QString item;
         bool found = false;
+        QRegExp s("Started: [0-9]{14}");
         for (QStringList::const_iterator i = data.begin(); i != data.end(); i ++ )
         {
-            QRegExp r("Crashed: [0-9]{14}");
-            if (r.indexIn(*i) != -1)
+            if (datestr.indexIn(*i) != -1)
             {
                 found = true;
                 if (item.size() > 0)
@@ -236,12 +242,14 @@ void CrashLog::Parsed()
                 else
                     item = *i;
             }
-            else if (found)
+            else if (found && !(i->trimmed().isEmpty()) && s.indexIn(*i) == -1)
                 item += "\n" + *i;
         }
 
         if (item.size() > 0)
             parsed_contents << item;
+
+        file.close();
     }
 
     len = parsed_contents.size();
@@ -249,9 +257,8 @@ void CrashLog::Parsed()
 
 QDate CrashLog::getDate(const int idx)
 {
-    QRegExp r("Crashed: ([0-9]{14})");
-    if (r.indexIn(parsed_contents.at(idx)) != -1)
-        return QDate().fromString(r.cap(1).left(8), "yyyyMMdd");
+    if (datestr.indexIn(parsed_contents.at(idx)) != -1)
+        return QDate().fromString(datestr.cap(1).left(8), "yyyyMMdd");
     else
         return QDate();
 }
