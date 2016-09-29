@@ -128,17 +128,16 @@ void LogFile::EventsSearch(const int sidx, const int eidx, const QList<QHash<QSt
             }
             else if (j->contains("StartToken") && j->contains("EndToken"))
             {
-                if (parsed_contents.at(i).contains((*j)["StartToken"]) || parsed_contents.at(i).contains((*j)["EndToken"]))
-                    tracing[(*j)["Name"]] += 1;
-
-                if (tracing[(*j)["Name"]] == 2)
+                if (parsed_contents.at(i).contains((*j)["StartToken"]))
+                    tracing[(*j)["Name"]] = 1;
+                else if ( tracing[(*j)["Name"]] == 1 && parsed_contents.at(i).contains((*j)["EndToken"]))
                 {
-                    if (searched.contains((*j)["Name"]))
-                        searched[(*j)["Name"]] += 1;
-                    else
-                        searched[(*j)["Name"]] = 1;
+                     if (searched.contains((*j)["Name"]))
+                         searched[(*j)["Name"]] += 1;
+                     else
+                         searched[(*j)["Name"]] = 1;
 
-                    tracing[(*j)["Name"]] = 0;
+                     tracing[(*j)["Name"]] = 0;
                 }
             }
         }
@@ -158,7 +157,14 @@ void TraceLog::Parsed()
             file.close();
         }
     }
+/*
+    std::stable_sort (parsed_contents.begin(), parsed_contents.end(), [&](const QString &a, const QString &b) -> bool
+    {
+       QDateTime dt_a = (dt.indexIn(a) != -1)?QDateTime().fromString(dt.cap(2) + "-" + year + " " + dt.cap(3), "MM-dd-yyyy hh:mm:ss:zzz"):QDateTime();
+       QDateTime dt_b = (dt.indexIn(b) != -1)?QDateTime().fromString(dt.cap(2) + "-" + year + " " + dt.cap(3), "MM-dd-yyyy hh:mm:ss:zzz"):QDateTime();
 
+       return dt_a < dt_b;
+    });*/
     len = parsed_contents.size();
 }
 
@@ -183,7 +189,14 @@ void MessagesLog::Parsed()
             file.close();
         }
     }
+/*
+    std::stable_sort (parsed_contents.begin(), parsed_contents.end(), [&](const QString &a, const QString &b) -> bool
+    {
+       QDateTime dt_a = (dt.indexIn(a) != -1)?QDateTime().fromString(dt.cap(1) + " " + dt.cap(2) + " " + year + " " + dt.cap(3), "MMM d yyyy hh:mm:ss"):QDateTime();
+       QDateTime dt_b = (dt.indexIn(b) != -1)?QDateTime().fromString(dt.cap(1) + " " + dt.cap(2) + " " + year + " " + dt.cap(3), "MMM d yyyy hh:mm:ss"):QDateTime();
 
+       return dt_a < dt_b;
+    });*/
     len = parsed_contents.size();
 }
 
@@ -208,7 +221,14 @@ void SysLog::Parsed()
             file.close();
         }
     }
+/*
+    std::stable_sort (parsed_contents.begin(), parsed_contents.end(), [&](const QString &a, const QString &b) -> bool
+    {
+       QDateTime dt_a = (dt.indexIn(a) != -1)?QDateTime().fromString(dt.cap(1) + " " + dt.cap(2) + " " + year + " " + dt.cap(3), "MMM d yyyy hh:mm:ss"):QDateTime();
+       QDateTime dt_b = (dt.indexIn(b) != -1)?QDateTime().fromString(dt.cap(1) + " " + dt.cap(2) + " " + year + " " + dt.cap(3), "MMM d yyyy hh:mm:ss"):QDateTime();
 
+       return dt_a < dt_b;
+    });*/
     len = parsed_contents.size();
 }
 

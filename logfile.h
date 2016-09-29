@@ -16,7 +16,7 @@ private:
 protected:
     QString path;
     QString filename;
-    QRegExp datestr;
+    QRegExp datestr, dt;
     QString year;
     QStringList parsed_contents;
     int len;
@@ -45,7 +45,11 @@ public:
 class TraceLog : public LogFile
 {
 public:
-    TraceLog (const QString p, const QString n) : LogFile (p, n) {datestr = QRegExp("^(.)*\\|([0-9]{2}-[0-9]{2}) ");}
+    TraceLog (const QString p, const QString n) : LogFile (p, n)
+    {
+        datestr = QRegExp("^(.)*\\|([0-9]{2}-[0-9]{2}) ");
+        dt = QRegExp("^(.)*\\|([0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{3})\\|");
+    }
 
     QDate getDate (const int idx);
     void Parsed ();
@@ -54,7 +58,11 @@ public:
 class MessagesLog : public LogFile
 {
 public:
-    MessagesLog (const QString p, const QString n) : LogFile (p, n) {datestr = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ");}
+    MessagesLog (const QString p, const QString n) : LogFile (p, n)
+    {
+        datestr = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ");
+        dt = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}) ");
+    }
 
     QDate getDate (const int idx);
     void Parsed();
@@ -63,7 +71,11 @@ public:
 class SysLog : public LogFile
 {
 public:
-    SysLog (const QString p, const QString n) : LogFile (p, n) {datestr = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ");}
+    SysLog (const QString p, const QString n) : LogFile (p, n)
+    {
+        datestr = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ");
+        dt = QRegExp("^([a-zA-Z]{3}) +([0-9]{1,2}) ([0-9]{2}:[0-9]{2}:[0-9]{2}) ");
+    }
 
     QDate getDate(const int idx);
     void Parsed();
@@ -72,7 +84,11 @@ public:
 class CrashLog : public LogFile
 {
 public:
-    CrashLog (const QString p, const QString n) : LogFile (p, n) {datestr = QRegExp("Crashed: ([0-9]{14})");}
+    CrashLog (const QString p, const QString n) : LogFile (p, n)
+    {
+        datestr = QRegExp("Crashed: ([0-9]{14})");
+        dt = QRegExp("Crashed: ([0-9]{14})");
+    }
 
     QDate getDate(const int idx);
     void Parsed();
